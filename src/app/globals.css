@@ -172,3 +172,79 @@ h6 {
 .animate-slide-in {
   animation: slideIn 200ms ease-out;
 }
+
+/* ===================================
+   ACCESSIBILITY STYLES
+   WCAG 2.1 AA Compliance
+   =================================== */
+
+/* Focus-visible for keyboard users - shows clear focus ring only when using keyboard */
+:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Remove default focus outline for mouse users */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Skip to main content link - helps keyboard users skip navigation */
+.skip-to-content {
+  position: absolute;
+  top: -100%;
+  left: 16px;
+  padding: 12px 24px;
+  background: var(--color-primary-600);
+  color: white;
+  font-weight: 600;
+  border-radius: 8px;
+  z-index: 9999;
+  transition: top 150ms ease-in-out;
+}
+
+.skip-to-content:focus {
+  top: 16px;
+}
+
+/* Respect reduced motion preference - disable animations for users with vestibular disorders */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .animate-spin {
+    animation: none !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --color-primary-500: #0077cc;
+    --color-secondary-500: #008080;
+  }
+  
+  .glass {
+    background: rgba(255, 255, 255, 0.95);
+  }
+}
+
+/* Screen reader only - visually hidden but accessible */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
