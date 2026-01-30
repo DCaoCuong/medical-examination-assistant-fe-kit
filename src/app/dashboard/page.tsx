@@ -216,16 +216,17 @@ export default function DashboardPage() {
                                 <p className="text-slate-400 font-medium">Chưa có lịch khám nào</p>
                             </div>
                         ) : (
-                            <table className="w-full">
+                            <table className="w-full" role="grid" aria-label="Danh sách lịch khám bệnh">
+                                <caption className="sr-only">Bảng danh sách các lịch khám. Sử dụng phím Tab để di chuyển, Enter để bắt đầu khám.</caption>
                                 <thead className="bg-slate-100 border-b border-slate-200">
                                     <tr>
-                                        <th className="px-6 py-3 text-left text-sm font-semibold text-slate-700 whitespace-nowrap">Mã lịch</th>
-                                        <th className="px-6 py-3 text-left text-sm font-semibold text-slate-700 whitespace-nowrap">Tên bệnh nhân</th>
-                                        <th className="px-6 py-3 text-left text-sm font-semibold text-slate-700 whitespace-nowrap">Tuổi/Giới tính</th>
-                                        <th className="px-6 py-3 text-left text-sm font-semibold text-slate-700 whitespace-nowrap">SĐT</th>
-                                        <th className="px-6 py-3 text-left text-sm font-semibold text-slate-700 whitespace-nowrap">Thời gian đặt</th>
-                                        <th className="px-6 py-3 text-left text-sm font-semibold text-slate-700 whitespace-nowrap">Trạng thái</th>
-                                        <th className="px-6 py-3 text-center text-sm font-semibold text-slate-700 whitespace-nowrap">Thao tác</th>
+                                        <th scope="col" className="px-6 py-3 text-left text-sm font-semibold text-slate-700 whitespace-nowrap">Mã lịch</th>
+                                        <th scope="col" className="px-6 py-3 text-left text-sm font-semibold text-slate-700 whitespace-nowrap">Tên bệnh nhân</th>
+                                        <th scope="col" className="px-6 py-3 text-left text-sm font-semibold text-slate-700 whitespace-nowrap">Tuổi/Giới tính</th>
+                                        <th scope="col" className="px-6 py-3 text-left text-sm font-semibold text-slate-700 whitespace-nowrap">SĐT</th>
+                                        <th scope="col" className="px-6 py-3 text-left text-sm font-semibold text-slate-700 whitespace-nowrap">Thời gian đặt</th>
+                                        <th scope="col" className="px-6 py-3 text-left text-sm font-semibold text-slate-700 whitespace-nowrap">Trạng thái</th>
+                                        <th scope="col" className="px-6 py-3 text-center text-sm font-semibold text-slate-700 whitespace-nowrap">Thao tác</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -234,6 +235,15 @@ export default function DashboardPage() {
                                             key={booking.id}
                                             className={`border-b border-slate-100 transition cursor-pointer ${getRowUrgencyClass(booking.bookingTime, booking.hasSession, booking.sessionStatus)}`}
                                             onClick={() => handleRowClick(booking.id, booking.sessionStatus)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter' || e.key === ' ') {
+                                                    e.preventDefault();
+                                                    handleRowClick(booking.id, booking.sessionStatus);
+                                                }
+                                            }}
+                                            tabIndex={0}
+                                            role="row"
+                                            aria-label={`Bệnh nhân ${booking.patientName}, ${booking.sessionStatus === 'completed' ? 'đã hoàn thành' : 'chờ khám'}`}
                                             style={{ animationDelay: `${idx * 50}ms` }}
                                         >
                                             <td className="px-6 py-4">
@@ -242,7 +252,13 @@ export default function DashboardPage() {
                                             <td className="px-6 py-4">
                                                 <div className="font-medium text-slate-800">{booking.patientName}</div>
                                                 {booking.symptoms && (
-                                                    <div className="text-xs text-slate-500 mt-1 truncate max-w-xs">{booking.symptoms}</div>
+                                                    <div
+                                                        className="text-xs text-slate-500 mt-1 truncate max-w-xs"
+                                                        title={booking.symptoms}
+                                                        aria-label={`Triệu chứng: ${booking.symptoms}`}
+                                                    >
+                                                        {booking.symptoms}
+                                                    </div>
                                                 )}
                                             </td>
                                             <td className="px-6 py-4 text-slate-600">
@@ -277,6 +293,7 @@ export default function DashboardPage() {
                                                         onClick={(e) => handleQuickExam(booking.id, booking.sessionStatus, e)}
                                                         className="px-3 py-2 text-xs flex items-center gap-1"
                                                         title={booking.sessionStatus === 'completed' ? 'Xem bệnh án' : 'Bắt đầu khám'}
+                                                        aria-label={booking.sessionStatus === 'completed' ? `Xem bệnh án của ${booking.patientName}` : `Bắt đầu khám bệnh nhân ${booking.patientName}`}
                                                     >
                                                         {booking.sessionStatus === 'completed' ? (
                                                             <>
@@ -296,6 +313,7 @@ export default function DashboardPage() {
                                                         className="px-3 py-2 text-xs flex items-center gap-1"
                                                         disabled={deletingBookingId === booking.id}
                                                         title="Xóa lịch khám"
+                                                        aria-label={`Xóa lịch khám của ${booking.patientName}`}
                                                     >
                                                         {deletingBookingId === booking.id ? (
                                                             <span className="animate-spin">⏳</span>

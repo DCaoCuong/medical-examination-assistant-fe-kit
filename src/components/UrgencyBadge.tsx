@@ -64,7 +64,7 @@ function getUrgencyLevel(bookingTime: string, hasSession: boolean, sessionStatus
 }
 
 export default function UrgencyBadge({ bookingTime, hasSession, sessionStatus }: UrgencyBadgeProps) {
-    const { level, label } = getUrgencyLevel(bookingTime, hasSession, sessionStatus);
+    const { level, label, waitingMinutes } = getUrgencyLevel(bookingTime, hasSession, sessionStatus);
 
     if (level === 'none') {
         return null;
@@ -75,22 +75,25 @@ export default function UrgencyBadge({ bookingTime, hasSession, sessionStatus }:
             bg: 'bg-red-100',
             text: 'text-red-700',
             border: 'border-red-300',
-            icon: <AlertTriangle className="w-3 h-3" />,
+            icon: <AlertTriangle className="w-3 h-3" aria-hidden="true" />,
             pulse: true,
+            ariaLabel: `Khẩn cấp: ${label}. Bệnh nhân đã chờ quá lâu.`,
         },
         attention: {
             bg: 'bg-amber-100',
             text: 'text-amber-700',
             border: 'border-amber-300',
-            icon: <Clock className="w-3 h-3" />,
+            icon: <Clock className="w-3 h-3" aria-hidden="true" />,
             pulse: false,
+            ariaLabel: `Cần chú ý: ${label}.`,
         },
         normal: {
             bg: 'bg-slate-100',
             text: 'text-slate-600',
             border: 'border-slate-300',
-            icon: <Clock className="w-3 h-3" />,
+            icon: <Clock className="w-3 h-3" aria-hidden="true" />,
             pulse: false,
+            ariaLabel: `Thời gian chờ: ${label}.`,
         },
     };
 
@@ -98,6 +101,9 @@ export default function UrgencyBadge({ bookingTime, hasSession, sessionStatus }:
 
     return (
         <span
+            role="status"
+            aria-live="polite"
+            aria-label={style.ariaLabel}
             className={`
                 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium
                 ${style.bg} ${style.text} border ${style.border}

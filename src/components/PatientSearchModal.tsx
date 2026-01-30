@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { X, Search, User, Phone, Calendar } from 'lucide-react';
 import Button from './ui/Button';
 import { apiClient } from '@/lib/api-client';
+import { useRouter } from 'next/navigation';
 
 interface Patient {
     id: string;
@@ -25,6 +26,7 @@ export default function PatientSearchModal({ onClose, onPatientSelect }: Patient
     const [patients, setPatients] = useState<Patient[]>([]);
     const [loading, setLoading] = useState(false);
     const [debouncedQuery, setDebouncedQuery] = useState('');
+    const router = useRouter();
 
     // Debounce search
     useEffect(() => {
@@ -71,6 +73,12 @@ export default function PatientSearchModal({ onClose, onPatientSelect }: Patient
         // Tái khám = navigate đến examination
         onPatientSelect(patientId, patients.find(p => p.id === patientId)?.displayId || '');
         onClose();
+    };
+
+    const handleViewProfile = (patient: Patient) => {
+        // Xem hồ sơ = navigate đến trang lịch sử khám bệnh
+        onClose();
+        router.push(`/patient/${patient.displayId}/history`);
     };
 
     return (
@@ -138,8 +146,8 @@ export default function PatientSearchModal({ onClose, onPatientSelect }: Patient
                                     <PatientCard
                                         key={patient.id}
                                         patient={patient}
-                                        onSelect={() => handleSelectPatient(patient)}
                                         onFollowUp={() => handleFollowUp(patient.id)}
+                                        onViewProfile={() => handleViewProfile(patient)}
                                         index={idx}
                                     />
                                 ))}
@@ -155,13 +163,13 @@ export default function PatientSearchModal({ onClose, onPatientSelect }: Patient
 // Patient Card Component
 function PatientCard({
     patient,
-    onSelect,
     onFollowUp,
+    onViewProfile,
     index
 }: {
     patient: Patient;
-    onSelect: () => void;
     onFollowUp: () => void;
+    onViewProfile: () => void;
     index: number;
 }) {
     const age = patient.birthDate
@@ -230,7 +238,7 @@ function PatientCard({
                 </Button>
                 <Button
                     variant="secondary"
-                    onClick={onSelect}
+                    onClick={onViewProfile}
                     className="flex-1 flex items-center justify-center gap-2"
                 >
                     📂 Xem hồ sơ

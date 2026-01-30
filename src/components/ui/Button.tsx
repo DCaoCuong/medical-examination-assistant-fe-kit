@@ -38,10 +38,12 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
                 ref={ref}
                 className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`}
                 disabled={disabled || isLoading}
+                aria-busy={isLoading}
+                aria-disabled={disabled || isLoading}
                 {...props}
             >
                 {isLoading && (
-                    <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                    <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" aria-hidden="true"></div>
                 )}
                 {children}
             </button>
