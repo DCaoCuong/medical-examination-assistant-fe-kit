@@ -7,7 +7,8 @@ import SessionInitForm from '@/components/SessionInitForm';
 import MedicalRecordReview, { type MedicalRecordData } from '@/components/MedicalRecordReview';
 import { Button, Card, Badge, Textarea, useToast } from '@/components/ui';
 import { Session } from '@/lib/services/sessionService';
-import { ChevronDown, Check, Loader2, Mic, Edit3, Sparkles, ChevronRight } from 'lucide-react';
+import { ChevronDown, Check, Loader2, Mic, Edit3, Sparkles, ChevronRight, ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
 import { apiClient } from '@/lib/api-client';
 
 interface TranscriptSegment {
@@ -357,6 +358,17 @@ ${analysisResult.soap.plan}
                                     Chọn phương thức này <ChevronRight className="w-4 h-4" />
                                 </div>
                             </button>
+                        </div>
+
+                        {/* Back to Dashboard Button */}
+                        <div className="mt-8 text-center">
+                            <Link
+                                href="/"
+                                className="inline-flex items-center gap-2 px-6 py-3 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-all font-medium"
+                            >
+                                <ArrowLeft className="w-5 h-5" />
+                                Quay lại Dashboard
+                            </Link>
                         </div>
                     </Card>
                 )}

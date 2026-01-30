@@ -80,19 +80,20 @@ Ví dụ:
 export async function expertNode(state: AgentState): Promise<Partial<AgentState>> {
     console.log("Medical Expert Agent working (Groq GPT-OSS-20B)...");
 
-    // 1. Initialize DB (if not ready)
-    const medicalVectorStore = getMedicalVectorStore();
-    await medicalVectorStore.initialize();
+    try {
+        // 1. Initialize DB (if not ready)
+        const medicalVectorStore = getMedicalVectorStore();
+        await medicalVectorStore.initialize();
 
-    // 2. Retrieve relevant docs based on Subjective
-    const retriever = medicalVectorStore.getRetriever();
-    const docs = await retriever.invoke(state.soap.subjective);
+        // 2. Retrieve relevant docs based on Subjective
+        const retriever = medicalVectorStore.getRetriever();
+        const docs = await retriever.invoke(state.soap.subjective);
 
-    const context = docs.map((d: Document) => d.pageContent).join("\n---\n");
-    const references = docs.map((d: Document) => (d.metadata.source || "Unknown Source").replace(".md", ""));
+        const context = docs.map((d: Document) => d.pageContent).join("\n---\n");
+        const references = docs.map((d: Document) => (d.metadata.source || "Unknown Source").replace(".md", ""));
 
-    // 3. Ask LLM with Context
-    const prompt = `Bạn là chuyên gia y tế cố vấn. TẤT CẢ PHẢN HỒI PHẢI BẰNG TIẾNG VIỆT.
+        // 3. Ask LLM with Context
+        const prompt = `Bạn là chuyên gia y tế cố vấn. TẤT CẢ PHẢN HỒI PHẢI BẰNG TIẾNG VIỆT.
 Dựa vào Y VĂN ĐƯỢC CUNG CẤP dưới đây, hãy đưa ra nhận xét và gợi ý điều trị.
 
 Y VĂN (Context):
@@ -116,14 +117,21 @@ LƯU Ý QUAN TRỌNG:
 - KHÔNG dùng tiếng Anh. 
 - Tất cả tiêu đề, nội dung phải hoàn toàn bằng TIẾNG VIỆT.`;
 
-    const completion = await groq.chat.completions.create({
-        messages: [{ role: "user", content: prompt }],
-        model: GROQ_MODEL_EXPERT,
-        temperature: 0.2
-    });
+        const completion = await groq.chat.completions.create({
+            messages: [{ role: "user", content: prompt }],
+            model: GROQ_MODEL_EXPERT,
+            temperature: 0.2
+        });
 
-    return {
-        medicalAdvice: completion.choices[0]?.message?.content || "",
-        references
-    };
+        return {
+            medicalAdvice: completion.choices[0]?.message?.content || "",
+            references
+        };
+    } catch (e) {
+        console.error("Medical Expert Agent Error:", e);
+        return {
+            medicalAdvice: "Không thể tạo gợi ý y tế. Vui lòng kiểm tra kết nối và thử lại.",
+            references: []
+        };
+    }
 }
